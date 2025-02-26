@@ -2,10 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { v4 as uuidv4 } from "uuid";
 import { FaHome } from "react-icons/fa";
 
 import { House } from "@/types/citybuilder";
+import HouseCard from "@/components/citybuilder/housecard";
 import { fetchWeather, WeatherIcon } from "../helpers/weather";
+
+const calculateHeight = (floors: number) => (floors + 1) * 50;
 
 const cities = {
   Sofia: { latitude: 42.698334, longitude: 23.319941 },
@@ -15,6 +19,8 @@ const cities = {
 
 export default function CityBuilder() {
   const [houses, setHouses] = useState<House[]>([]);
+  const [editingHouseId, setEditingHouseId] = useState<string | null>(null);
+  const [removingHouse, setRemovingHouse] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] =
     useState<keyof typeof cities>("Sofia");
 
@@ -43,6 +49,40 @@ export default function CityBuilder() {
         cities[selectedCity].longitude
       ),
   });
+
+  const addHouse = () => {
+    setHouses([
+      ...houses,
+      {
+        id: uuidv4(),
+        floors: [{ id: 0, color: "" }],
+        color: "Orange",
+        name: `House Default name`,
+        height: calculateHeight(1),
+      },
+    ]);
+  };
+
+  const updateHouse = (id: string, updatedHouse: House) => {
+    setHouses(
+      houses.map((house) =>
+        house.id === id
+          ? {
+              ...updatedHouse,
+              height: calculateHeight(updatedHouse.floors.length),
+            }
+          : house
+      )
+    );
+  };
+
+  const removeHouse = (id: string) => {
+    setRemovingHouse(id);
+    setTimeout(() => {
+      setHouses((prevHouses) => prevHouses.filter((house) => house.id !== id));
+      setRemovingHouse(null);
+    }, 500); // should be < animation duration 'scaleDown' in tailwind.config.ts
+  };
 
   const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCity(event.target.value as keyof typeof cities);
@@ -82,13 +122,28 @@ export default function CityBuilder() {
           <h2 className="text-base sm:text-lg font-semibold mb-2">
             Houses List
           </h2>
-          <div>HouseCard component</div>
-          <button className="mt-4 w-full bg-gray-400 p-2 rounded shadow-lg text-white flex items-center justify-center text-sm sm:text-base transition-all duration-300 hover:-translate-y-0.5 active:translate-y-1 hover:shadow-2xl active:shadow-lg">
+          <div>
+            {houses.map((house) => (
+              <HouseCard
+                key={house.id}
+                house={house}
+                editingHouseId={editingHouseId}
+                setEditingHouseId={setEditingHouseId}
+                updateHouse={updateHouse}
+                removeHouse={removeHouse}
+                removingHouse={removingHouse}
+                setHouses={setHouses}
+              />
+            ))}
+          </div>
+          <button
+            onClick={addHouse}
+            className="mt-4 w-full bg-gray-400 p-2 rounded shadow-lg text-white flex items-center justify-center text-sm sm:text-base transition-all duration-300 hover:-translate-y-0.5 active:translate-y-1 hover:shadow-2xl active:shadow-lg"
+          >
             <FaHome className="mr-2 w-6 h-6" />
             Build a new house
           </button>
         </div>
-
         <div
           className="lg:col-span-8 bg-white p-4 rounded shadow"
           id="city-view"
