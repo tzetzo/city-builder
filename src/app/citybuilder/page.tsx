@@ -22,7 +22,6 @@ const cities = {
 export default function CityBuilder() {
   const [houses, setHouses] = useState<House[]>([]);
   const [editingHouseId, setEditingHouseId] = useState<string | null>(null);
-  const [removingHouse, setRemovingHouse] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] =
     useState<keyof typeof cities>("Sofia");
 
@@ -61,6 +60,7 @@ export default function CityBuilder() {
         color: "Orange",
         name: `House Default name`,
         height: calculateHeight(1),
+        status: "added",
       },
     ]);
   };
@@ -79,10 +79,14 @@ export default function CityBuilder() {
   };
 
   const removeHouse = (id: string) => {
-    setRemovingHouse(id);
+    setHouses((prevHouses) =>
+      prevHouses.map((house) =>
+        house.id === id ? { ...house, status: "removed" } : house
+      )
+    );
+
     setTimeout(() => {
       setHouses((prevHouses) => prevHouses.filter((house) => house.id !== id));
-      setRemovingHouse(null);
     }, 500); // should be < animation duration 'scaleDown' in tailwind.config.ts
   };
 
@@ -148,7 +152,6 @@ export default function CityBuilder() {
                 setEditingHouseId={setEditingHouseId}
                 updateHouse={updateHouse}
                 removeHouse={removeHouse}
-                removingHouse={removingHouse}
                 setHouses={setHouses}
               />
             ))}
@@ -171,7 +174,7 @@ export default function CityBuilder() {
                 key={house.id}
                 house={house}
                 updateHouse={updateHouse}
-                removingHouse={removingHouse}
+                setHouses={setHouses}
               />
             ))}
           </div>

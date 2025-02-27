@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 
 import { House } from "@/types/citybuilder";
@@ -8,13 +8,13 @@ import Modal from "@/components/modal";
 interface DraggableHouseProps {
   house: House;
   updateHouse: (id: string, updatedHouse: House) => void;
-  removingHouse: string | null;
+  setHouses: (updater: (houses: House[]) => House[]) => void;
 }
 
 export default function DraggableHouse({
   house,
   updateHouse,
-  removingHouse,
+  setHouses,
 }: DraggableHouseProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: house.id,
@@ -25,6 +25,16 @@ export default function DraggableHouse({
 
   const [activeFloorId, setActiveFloorId] = useState<number | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("#ffffff");
+
+  useEffect(() => {
+    setTimeout(() => {
+      setHouses((prevHouses) =>
+        prevHouses.map((h) =>
+          h.id === house.id ? { ...h, status: "default" } : h
+        )
+      );
+    }, 700); // should be > the animation duration in tailwind.config.ts
+  }, []);
 
   const handleDoubleClick = (floorId: number) => {
     const floor = house.floors.find((f) => f.id === floorId);
@@ -73,7 +83,11 @@ export default function DraggableHouse({
       {...(activeFloorId === null ? attributes : {})} // Disables dragging when modal is open
       {...(activeFloorId === null ? listeners : {})}
       className={`inline-block m-2 relative transition-all duration-500 ${
-        removingHouse === house.id ? "animate-scaleDown" : "animate-scaleUp"
+        house.status === "removed"
+          ? "animate-scaleDown"
+          : house.status === "added"
+          ? "animate-scaleUp"
+          : ""
       }`}
     >
       <div
@@ -99,7 +113,7 @@ export default function DraggableHouse({
               backgroundColor: floor.color,
             }}
             title="Drag/drop house OR double-click to recolor floor"
-            onDoubleClick={() => handleDoubleClick(floor.id)}
+            onDoubleClick={(e) => handleDoubleClick(floor.id)}
           >
             {i === house.floors.length - 1 ? (
               <>

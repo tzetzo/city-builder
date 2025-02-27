@@ -10,7 +10,6 @@ interface HouseCardProps {
   setEditingHouseId: (id: string | null) => void;
   updateHouse: (id: string, updatedHouse: House) => void;
   removeHouse: (id: string) => void;
-  removingHouse: string | null;
   setHouses: React.Dispatch<React.SetStateAction<House[]>>;
 }
 
@@ -20,7 +19,6 @@ export default function HouseCard({
   setEditingHouseId,
   updateHouse,
   removeHouse,
-  removingHouse,
   setHouses,
 }: HouseCardProps) {
   const handleFloorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +36,11 @@ export default function HouseCard({
   return (
     <div
       className={`border p-2 rounded mb-2 shadow-md transition-all duration-500 ${
-        removingHouse === house.id ? "animate-scaleDown" : "animate-scaleUp"
+        house.status === "removed"
+          ? "animate-scaleDown"
+          : house.status === "added"
+          ? "animate-scaleUp"
+          : ""
       }`}
     >
       <div className="flex justify-between items-center">
@@ -135,7 +137,11 @@ export default function HouseCard({
                   houseColors[house.color as keyof typeof houseColors],
               }}
               onClick={() => {
-                const newHouse = { ...house, id: uuidv4() };
+                const newHouse = {
+                  ...house,
+                  id: uuidv4(),
+                  status: "added" as "added",
+                };
                 setHouses((prevHouses) => [...prevHouses, newHouse]);
               }}
             >
