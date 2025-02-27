@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
 import { FaHome } from "react-icons/fa";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
 
 import { House } from "@/types/citybuilder";
+import DraggableHouse from "@/components/citybuilder/draggablehouse";
 import HouseCard from "@/components/citybuilder/housecard";
 import { fetchWeather, WeatherIcon } from "../helpers/weather";
 
@@ -84,6 +86,21 @@ export default function CityBuilder() {
     }, 500); // should be < animation duration 'scaleDown' in tailwind.config.ts
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+    if (active.id !== over.id) {
+      setHouses((houses) => {
+        const oldIndex = houses.findIndex((house) => house.id === active.id);
+        const newIndex = houses.findIndex((house) => house.id === over.id);
+        const newHouses = [...houses];
+        const [movedHouse] = newHouses.splice(oldIndex, 1);
+        newHouses.splice(newIndex, 0, movedHouse);
+        return newHouses;
+      });
+    }
+  };
+
   const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCity(event.target.value as keyof typeof cities);
     queryClient.invalidateQueries({
@@ -144,12 +161,21 @@ export default function CityBuilder() {
             Build a new house
           </button>
         </div>
-        <div
-          className="lg:col-span-8 bg-white p-4 rounded shadow"
-          id="city-view"
-        >
-          DraggableHouse component
-        </div>
+        <DndContext onDragEnd={handleDragEnd}>
+          <div
+            className="lg:col-span-8 bg-white p-4 rounded shadow"
+            id="city-view"
+          >
+            {houses.map((house) => (
+              <DraggableHouse
+                key={house.id}
+                house={house}
+                updateHouse={updateHouse}
+                removingHouse={removingHouse}
+              />
+            ))}
+          </div>
+        </DndContext>
       </div>
     </div>
   );
