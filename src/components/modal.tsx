@@ -6,6 +6,7 @@ interface ModalProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
+  position?: { x: number; y: number };
 }
 
 export default function Modal({
@@ -13,6 +14,7 @@ export default function Modal({
   onClose,
   title,
   children,
+  position,
 }: ModalProps) {
   useEffect(() => {
     if (isOpen) document.body.classList.add("overflow-hidden");
@@ -23,7 +25,14 @@ export default function Modal({
 
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-10 z-[9999]">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+      <div
+        style={{
+          top: position?.y,
+          left: position?.x,
+          transform: "translate(-50%, 30%)",
+        }}
+        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md absolute"
+      >
         <div className="flex justify-between items-center mb-4">
           {title && <h2 className="text-xl font-semibold">{title}</h2>}
           <button

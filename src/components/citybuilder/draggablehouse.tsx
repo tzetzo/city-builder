@@ -25,6 +25,7 @@ export default function DraggableHouse({
 
   const [activeFloorId, setActiveFloorId] = useState<number | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("#ffffff");
+  const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     setTimeout(() => {
@@ -36,7 +37,11 @@ export default function DraggableHouse({
     }, 700); // should be > the animation duration in tailwind.config.ts
   }, []);
 
-  const handleDoubleClick = (floorId: number) => {
+  const handleDoubleClick = (
+    e: React.MouseEvent<HTMLDivElement>,
+    floorId: number
+  ) => {
+    setModalPosition({ x: e.clientX, y: e.clientY });
     const floor = house.floors.find((f) => f.id === floorId);
     if (floor) {
       setSelectedColor(floor.color || "#ffffff");
@@ -113,7 +118,7 @@ export default function DraggableHouse({
               backgroundColor: floor.color,
             }}
             title="Drag/drop house OR double-click to recolor floor"
-            onDoubleClick={(e) => handleDoubleClick(floor.id)}
+            onDoubleClick={(e) => handleDoubleClick(e, floor.id)}
           >
             {i === house.floors.length - 1 ? (
               <>
@@ -130,6 +135,7 @@ export default function DraggableHouse({
               isOpen={activeFloorId === floor.id}
               onClose={() => setActiveFloorId(null)}
               title="Choose floor color"
+              position={modalPosition}
             >
               <input
                 type="color"
