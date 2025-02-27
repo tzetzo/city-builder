@@ -85,6 +85,8 @@ export default function DraggableHouse({
         style={{
           backgroundColor: houseColors[house.color as keyof typeof houseColors],
         }}
+        role="region"
+        aria-label="house"
       >
         {house.floors.map((floor, i) => (
           <div
