@@ -28,14 +28,16 @@ export default function DraggableHouse({
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       setHouses((prevHouses) =>
         prevHouses.map((h) =>
           h.id === house.id ? { ...h, status: "default" } : h
         )
       );
     }, 700); // should be > the animation duration in tailwind.config.ts
-  }, []);
+
+    return () => clearTimeout(timeoutId);
+  }, [house.id, setHouses]);
 
   const handleDoubleClick = (
     e: React.MouseEvent<HTMLDivElement>,

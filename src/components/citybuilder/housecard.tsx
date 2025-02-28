@@ -140,7 +140,7 @@ export default function HouseCard({
                 const newHouse = {
                   ...house,
                   id: uuidv4(),
-                  status: "added" as "added",
+                  status: "added" as const,
                 };
                 setHouses((prevHouses) => [...prevHouses, newHouse]);
               }}
