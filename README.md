@@ -19,3 +19,13 @@ City Builder is an interactive web application that allows users to create and m
 ## Development and Testing
 
 To learn how to run the app in development mode, execute tests, and build for production, please refer to the `scripts` section in the `package.json` file. Tests are written using Jest and React Testing Library to ensure the app's functionality and reliability.
+
+## Production
+
+To run the app in production mode, use the following command:
+
+```sh
+npx vercel
+```
+
+The app has already been deployed on Vercel and can be accessed at [City Builder](https://city-builder-ne8fclftl-tzvetans-projects-c44d5023.vercel.app/citybuilder).
