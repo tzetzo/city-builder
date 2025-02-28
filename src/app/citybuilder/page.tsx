@@ -19,11 +19,20 @@ const cities = {
   Atlanta: { latitude: 33.753746, longitude: -84.38633 },
 };
 
+interface WeatherData {
+  current_weather: {
+    temperature: number;
+    weathercode: number;
+  };
+  city?: string;
+}
+
 export default function CityBuilder() {
   const [houses, setHouses] = useState<House[]>([]);
   const [editingHouseId, setEditingHouseId] = useState<string | null>(null);
-  const [selectedCity, setSelectedCity] =
-    useState<keyof typeof cities>("Sofia");
+  const [selectedCity, setSelectedCity] = useState<keyof typeof cities | null>(
+    null
+  );
 
   const queryClient = useQueryClient();
 
@@ -42,13 +51,18 @@ export default function CityBuilder() {
     data: weather,
     error,
     isLoading,
-  } = useQuery({
+  } = useQuery<WeatherData>({
     queryKey: ["weather", selectedCity],
-    queryFn: () =>
-      fetchWeather(
-        cities[selectedCity].latitude,
-        cities[selectedCity].longitude
-      ),
+    queryFn: async () => {
+      if (!selectedCity) {
+        return fetchWeather();
+      } else {
+        return fetchWeather(
+          cities[selectedCity].latitude,
+          cities[selectedCity].longitude
+        );
+      }
+    },
   });
 
   const addHouse = () => {
@@ -121,20 +135,30 @@ export default function CityBuilder() {
           {error && <p>{error.message}</p>}
           {weather && (
             <p className="flex items-center">
-              {weather.current_weather.temperature}°C
-              <WeatherIcon weathercode={weather.current_weather.weathercode} />
+              {weather?.current_weather?.temperature}°C
+              <WeatherIcon
+                weathercode={weather?.current_weather?.weathercode}
+              />
             </p>
           )}
           <select
-            value={selectedCity}
+            value={selectedCity || (weather?.city ? weather.city : "")}
             onChange={handleCityChange}
-            className="ml-6 p-2 border rounded text-black text-sm h-10 w-40 focus:outline-none bg-white shadow-md transition-all duration-300 hover:shadow-lg"
+            className="ml-6 p-2 border rounded text-black text-sm h-10 w-auto min-w-[150px] focus:outline-none bg-white shadow-md transition-all duration-300 hover:shadow-lg"
           >
+            <option value="" disabled>
+              Select a city
+            </option>
             {Object.keys(cities).map((city) => (
               <option key={city} value={city}>
                 {city}
               </option>
             ))}
+            {weather?.city && !Object.keys(cities).includes(weather.city) && (
+              <option key={weather.city} value={weather.city}>
+                {weather.city}
+              </option>
+            )}
           </select>
         </div>
       </div>
