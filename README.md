@@ -7,7 +7,7 @@ City Builder is an interactive web application that allows users to create and m
 ## How to Use the App
 
 1. **Change House Name**: Click on the house name to edit and change it.
-2. **Change Floor Color**: Double-click a floor to open the color palette. Double-click the selected color to apply it to the floor.
+2. **Change Floor Color**: Right-click a floor to open the color palette. Double-click the selected color to apply it to the floor.
 3. **Rearrange Houses**: Drag and drop houses to switch their positions within the city layout.
 4. **Change City for Weather**: Use the city selector in the top right corner to change the city and view its weather information.
 5. **Duplicate Houses**: Click the Duplicate button to create a copy of an existing house.
