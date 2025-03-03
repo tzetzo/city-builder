@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { useState, memo } from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
 
@@ -7,8 +7,6 @@ import { houseColors } from "@/constants/colors";
 
 interface HouseCardProps {
   house: House;
-  editingHouseId: string | null;
-  setEditingHouseId: (id: string | null) => void;
   updateHouse: (id: string, updatedHouse: House) => void;
   removeHouse: (id: string) => void;
   setHouses: React.Dispatch<React.SetStateAction<House[]>>;
@@ -16,12 +14,12 @@ interface HouseCardProps {
 
 const HouseCard: React.FC<HouseCardProps> = ({
   house,
-  editingHouseId,
-  setEditingHouseId,
   updateHouse,
   removeHouse,
   setHouses,
 }) => {
+  const [editingHouseId, setEditingHouseId] = useState<string | null>(null);
+
   const handleFloorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const floors =
       parseInt(e.target.value) < house.floors.length

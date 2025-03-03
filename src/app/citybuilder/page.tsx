@@ -29,7 +29,6 @@ interface WeatherData {
 
 export default function CityBuilder() {
   const [houses, setHouses] = useState<House[]>([]);
-  const [editingHouseId, setEditingHouseId] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<keyof typeof cities | null>(
     null
   );
@@ -172,8 +171,6 @@ export default function CityBuilder() {
               <HouseCard
                 key={house.id}
                 house={house}
-                editingHouseId={editingHouseId}
-                setEditingHouseId={setEditingHouseId}
                 updateHouse={updateHouse}
                 removeHouse={removeHouse}
                 setHouses={setHouses}
