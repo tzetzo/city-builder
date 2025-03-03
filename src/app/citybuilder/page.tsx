@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
 import { FaHome } from "react-icons/fa";
@@ -79,9 +79,9 @@ export default function CityBuilder() {
     ]);
   };
 
-  const updateHouse = (id: string, updatedHouse: House) => {
-    setHouses(
-      houses.map((house) =>
+  const updateHouse = useCallback((id: string, updatedHouse: House) => {
+    setHouses((prevHouses) =>
+      prevHouses.map((house) =>
         house.id === id
           ? {
               ...updatedHouse,
@@ -90,9 +90,9 @@ export default function CityBuilder() {
           : house
       )
     );
-  };
+  }, []);
 
-  const removeHouse = (id: string) => {
+  const removeHouse = useCallback((id: string) => {
     setHouses((prevHouses) =>
       prevHouses.map((house) =>
         house.id === id ? { ...house, status: "removed" } : house
@@ -102,7 +102,7 @@ export default function CityBuilder() {
     setTimeout(() => {
       setHouses((prevHouses) => prevHouses.filter((house) => house.id !== id));
     }, 500); // should be < animation duration 'scaleDown' in tailwind.config.ts
-  };
+  }, []);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;

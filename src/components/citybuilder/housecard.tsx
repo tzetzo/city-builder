@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
 
@@ -13,14 +14,14 @@ interface HouseCardProps {
   setHouses: React.Dispatch<React.SetStateAction<House[]>>;
 }
 
-export default function HouseCard({
+const HouseCard: React.FC<HouseCardProps> = ({
   house,
   editingHouseId,
   setEditingHouseId,
   updateHouse,
   removeHouse,
   setHouses,
-}: HouseCardProps) {
+}) => {
   const handleFloorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const floors =
       parseInt(e.target.value) < house.floors.length
@@ -152,4 +153,6 @@ export default function HouseCard({
       </div>
     </div>
   );
-}
+};
+
+export default memo(HouseCard);

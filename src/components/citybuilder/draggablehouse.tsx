@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 
 import { House } from "@/types/citybuilder";
@@ -11,11 +11,11 @@ interface DraggableHouseProps {
   setHouses: (updater: (houses: House[]) => House[]) => void;
 }
 
-export default function DraggableHouse({
+const DraggableHouse: React.FC<DraggableHouseProps> = ({
   house,
   updateHouse,
   setHouses,
-}: DraggableHouseProps) {
+}) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: house.id,
   });
@@ -169,4 +169,6 @@ export default function DraggableHouse({
       </div>
     </div>
   );
-}
+};
+
+export default memo(DraggableHouse);
