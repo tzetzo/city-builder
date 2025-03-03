@@ -39,10 +39,11 @@ const DraggableHouse: React.FC<DraggableHouseProps> = ({
     return () => clearTimeout(timeoutId);
   }, [house.id, setHouses]);
 
-  const handleDoubleClick = (
+  const handleContextMenu = (
     e: React.MouseEvent<HTMLDivElement>,
     floorId: number
   ) => {
+    e.preventDefault();
     setModalPosition({ x: e.clientX, y: e.clientY });
     const floor = house.floors.find((f) => f.id === floorId);
     if (floor) {
@@ -119,8 +120,8 @@ const DraggableHouse: React.FC<DraggableHouseProps> = ({
               transition: "transform 0.3s, border 0.3s, background-color 0.3s",
               backgroundColor: floor.color,
             }}
-            title="Drag/drop house OR double-click to recolor floor"
-            onDoubleClick={(e) => handleDoubleClick(e, floor.id)}
+            title="Drag/drop house OR right-click to recolor floor"
+            onContextMenu={(e) => handleContextMenu(e, floor.id)}
           >
             {i === house.floors.length - 1 ? (
               <>
